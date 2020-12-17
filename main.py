@@ -1,5 +1,4 @@
 import pygame
-from pygame.constants import K_SPACE
 from pygame.locals import (
 	K_UP, K_DOWN, K_LEFT, K_RIGHT,
 	K_ESCAPE, KEYDOWN, QUIT
@@ -20,8 +19,8 @@ from common.config import (
 )
 
 # TODO: Add debug mode (optional)
-# TODO: Add random change eat position
-# * Don't collide with snake
+# TODO: Add the end of the game =>
+# TODO: => if the snake eats itself
 # TODO: Reorganized and cleaning classes
 # TODO: Write tests for classes
 
@@ -96,7 +95,7 @@ class Game:
 		hit = collide_rect(self.snake.head, self.eat)
 		if hit:
 			self.snake.upgrade()
-			self.eat.upgrade()
+			self.eat.upgrade(self.snake.get_positions)
 
 	def close(self) -> None:
 		""" Close main loop of game """

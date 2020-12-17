@@ -29,8 +29,21 @@ class Block(Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.x, self.rect.y = self._pos
 
-	def __str__(self) -> str:
-		return str(self._pos)
+	def __repr__(self) -> str:
+		return f"Block {self._pos}"
+
+	@property
+	def get_pos(self):
+		""" Return block position """
+		return self._pos
+
+	@property
+	def x(self):
+		return self.rect.x
+	
+	@property
+	def y(self):
+		return self.rect.y
 
 	def set_position(self, pos: list) -> None:
 		""" Set new position for block """

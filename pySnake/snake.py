@@ -50,7 +50,7 @@ class Snake(Group):
 			Block(pos=(x - self._step * 2, y), color=self._color)
 		])
 		super().__init__([*sprites, *self._body])
-	
+
 	def __len__(self) -> int:
 		return len(self._body)
 
@@ -63,7 +63,13 @@ class Snake(Group):
 	def length(self) -> int:
 		""" Get length snake """
 		return len(self)
-	
+
+	@property
+	def get_positions(self) -> set:
+		""" Get all positions snake body """
+
+		return set([(block.x, block.y) for block in self._body])
+
 	def _update_vector(self, vector: str) -> None:
 		""" Change vector snake """
 
@@ -75,7 +81,7 @@ class Snake(Group):
 			self.vector = UP
 		elif vector == DOWN and self.vector != UP:
 			self.vector = DOWN
-	
+
 	def _update_snake_body(self):
 		""" Update snake body """
 
@@ -89,7 +95,7 @@ class Snake(Group):
 		block = Block(pos=self.pos, color=self._color)
 		self._body.appendleft(block)
 		self.add(block)
-	
+
 	def _loop_in_frame(self):
 		""" Check snake pos in frame and edit them """
 
@@ -97,12 +103,12 @@ class Snake(Group):
 			self.pos.x = self.window.width - self._step
 		elif self.pos.x >= self.window.width:
 			self.pos.x = 0
-		
+	
 		if self.pos.y < 0:
 			self.pos.y = self.window.height - self._step
 		elif self.pos.y >= self.window.height:
 			self.pos.y = 0
-	
+
 	def move(self) -> None:
 		""" Move snake by vector on one grid item """
 
