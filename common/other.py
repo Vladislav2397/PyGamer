@@ -10,3 +10,8 @@ class MyColor:
     RED = Color(255, 0, 0)
     GREEN = Color(0, 255, 0)
     BLUE = Color(0, 0, 255)
+
+    DARKBLUE = Color(0, 0, 139)
+    DIMGRAY = Color(105, 105, 105)
+
+    WHITESMOKE = Color(245, 245, 245)

@@ -8,9 +8,11 @@ from pygame.locals import (
     K_ESCAPE, KEYDOWN, QUIT
 )
 from pygame import display
-from pygame.surface import Surface
 from pygame.time import Clock
 from pygame.sprite import Group, collide_rect
+
+import pygame_menu
+from pygame_menu import Menu
 
 from pySnake.eat import Eat
 from common.other import MyColor
@@ -27,21 +29,28 @@ from common.config import (
 # TODO: Reorganized and cleaning classes
 # TODO: Write tests for classes
 
-
 # As example:
 
 # BaseMenu - Abstract class for all menu (main, pause)
-# MainMenu and PauseMenu
+# MainMenu, PauseMenu, SettingsMenu, AboutMenu
+# or extends MenuAction
 
 # menu items - MenuItemCommand (pattern command)
-# PlayCommand, PauseCommand, ChangeGameCommand, QuitCommand
-
-# frame - frame for draw in app
+# PlayCommand, PauseCommand, SetGameCommand, AboutCommand, QuitCommand
 
 
-class AllGroups(Group):
-    """ Singleton for all groups """
-    instance = set()
+class SingletonMeta(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+class AllSprites(Group, metaclass=SingletonMeta):
+    """ Singleton for all sprites """
 
 
 class Application:
@@ -59,26 +68,7 @@ class Application:
         self._window = self._display.set_mode(window_size or WINDOW_SIZE)
         self._width, self._height = self._window.get_size()
         self.main_surface = MainMenu(self._window.get_size())
-
-        while self._is_enabled:
-            self._check_events()
-            self.draw()
-            self._display.flip()
-
-    def _check_events(self) -> None:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self.stop()
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.stop()
-
-    def draw(self):
-        self.main_surface.run()
-        self._window.blit(self.main_surface, (0, 0))
-
-    def stop(self):
-        self._is_enabled = False
+        self.main_surface.mainloop(self._window)
 
     def __del__(self) -> None:
         """ The exit from game """
@@ -87,7 +77,39 @@ class Application:
         pygame.quit()
 
 
-class BaseMenu(ABC, Surface):
+class Command(ABC):
+    def __call__(self, *args, **kwargs):
+        return self.execute()
+
+    @abstractmethod
+    def execute(self):
+        raise NotImplementedError(
+            'Обязательно создание метода execute'
+        )
+
+
+class StartGameCommand(Command):
+    def __init__(self, game):
+        self.game = game
+
+    def execute(self):
+        self.game.run()
+
+
+class PauseGameCommand(Command):
+    def __init__(self, game):
+        self.game = game
+
+    def execute(self):
+        self.game.pause()
+
+
+class QuitCommand(Command):
+    def execute(self):
+        return pygame_menu.events.EXIT
+
+
+class BaseMenu(ABC, Menu):
     pass
 
 
@@ -95,28 +117,35 @@ class MainMenu(BaseMenu):
     def __init__(self, size: Tuple[int, int]) -> None:
         """ Initialize of 'MainMenu' object with 'BaseMenu' interface """
 
-        super().__init__(size)
-        self._is_enabled = True
-        self._timer = time()
-        self._time = Clock()
+        super().__init__(
+            title='Main Menu',
+            width=size[0],
+            height=size[1],
+            center_content=True,
+            theme=pygame_menu.themes.THEME_DARK
+        )
+        self.game = Game()
+        self._menu_items = [
+            ('Start game', None),
+            ('Settings', None),
+            ('About', None),
+            ('Quit', QuitCommand())
+        ]
+        self.add.selector('Select game', [('Snake', 1), ('Tetris', 2)])
 
-    def _check_events(self) -> None:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self.stop()
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.stop()
+        for title, command in self._menu_items:
+            if command:
+                self.add.button(
+                    title=title,
+                    action=command()
+                )
+            else:
+                self.add.button(
+                    title=title
+                )
 
-    def run(self):
-        self._check_events()
-        self.draw()
-
-    def draw(self):
-        self.fill(MyColor.GREEN)
-
-    def stop(self):
-        self._is_enabled = False
+    def select_game(self):
+        return self.game.run()
 
 
 class PauseMenu(BaseMenu):
