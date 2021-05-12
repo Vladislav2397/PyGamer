@@ -14,6 +14,10 @@ from pygame.sprite import Group, collide_rect
 import pygame_menu
 from pygame_menu import Menu
 
+from common.command import (
+    QuitCommand
+)
+
 from pySnake.eat import Eat
 from common.other import MyColor
 from pySnake.snake import Snake
@@ -51,6 +55,7 @@ class SingletonMeta(type):
 
 class AllSprites(Group, metaclass=SingletonMeta):
     """ Singleton for all sprites """
+    pass
 
 
 class Application:
@@ -69,6 +74,14 @@ class Application:
         self._width, self._height = self._window.get_size()
         self.main_surface = MainMenu(self._window.get_size())
         self.main_surface.mainloop(self._window)
+        self.menu = Menu('title', *self._window.get_size())
+
+    def switch_menu(self):
+        self.main_surface = Menu(
+            'About',
+            self._window.get_width(),
+            self._window.get_height()
+        )
 
     def __del__(self) -> None:
         """ The exit from game """
@@ -77,44 +90,12 @@ class Application:
         pygame.quit()
 
 
-class Command(ABC):
-    def __call__(self, *args, **kwargs):
-        return self.execute()
-
-    @abstractmethod
-    def execute(self):
-        raise NotImplementedError(
-            'Обязательно создание метода execute'
-        )
-
-
-class StartGameCommand(Command):
-    def __init__(self, game):
-        self.game = game
-
-    def execute(self):
-        self.game.run()
-
-
-class PauseGameCommand(Command):
-    def __init__(self, game):
-        self.game = game
-
-    def execute(self):
-        self.game.pause()
-
-
-class QuitCommand(Command):
-    def execute(self):
-        return pygame_menu.events.EXIT
-
-
 class BaseMenu(ABC, Menu):
     pass
 
 
 class MainMenu(BaseMenu):
-    def __init__(self, size: Tuple[int, int]) -> None:
+    def __init__(self, size: Tuple[int, int], game=None) -> None:
         """ Initialize of 'MainMenu' object with 'BaseMenu' interface """
 
         super().__init__(
@@ -124,7 +105,7 @@ class MainMenu(BaseMenu):
             center_content=True,
             theme=pygame_menu.themes.THEME_DARK
         )
-        self.game = Game()
+        self._game = game() if game else Game()
         self._menu_items = [
             ('Start game', None),
             ('Settings', None),
@@ -145,7 +126,7 @@ class MainMenu(BaseMenu):
                 )
 
     def select_game(self):
-        return self.game.run()
+        return self._game.run()
 
 
 class PauseMenu(BaseMenu):
@@ -171,8 +152,6 @@ class Game(BaseGame):
 
     def __init__(self, window_size: tuple = None) -> None:
         """ Initialize of 'GAME' object """
-
-        pygame.init()
 
         self._window = display.set_mode(window_size or WINDOW_SIZE)
         self._width, self._height = self._window.get_size()
