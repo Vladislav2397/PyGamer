@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple
 from abc import ABC, abstractmethod
 from time import time
 
@@ -15,6 +15,9 @@ import pygame_menu
 from pygame_menu import Menu
 
 from common.command import (
+    Command,
+    StartGameCommand,
+    AboutCommand,
     QuitCommand
 )
 
@@ -72,16 +75,38 @@ class Application:
         self._display = display
         self._window = self._display.set_mode(window_size or WINDOW_SIZE)
         self._width, self._height = self._window.get_size()
-        self.main_surface = MainMenu(self._window.get_size())
-        self.main_surface.mainloop(self._window)
-        self.menu = Menu('title', *self._window.get_size())
-
-    def switch_menu(self):
-        self.main_surface = Menu(
-            'About',
-            self._window.get_width(),
-            self._window.get_height()
+        self.main_surface = MainMenu(
+            self._window.get_size()
         )
+
+        self.run()
+
+    def run(self):
+        while self._is_enabled:
+            self._check_events()
+            self.draw()
+            self._display.flip()
+
+    def _check_events(self):
+
+        events = pygame.event.get()
+
+        if self.main_surface.is_enabled():
+            self.main_surface.update(events)
+            self.main_surface.draw(self._window)
+
+        for event in events:
+            if event.type == QUIT:
+                self.stop()
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    self.stop()
+
+    def draw(self):
+        pass
+
+    def stop(self):
+        self._is_enabled = False
 
     def __del__(self) -> None:
         """ The exit from game """
@@ -90,12 +115,17 @@ class Application:
         pygame.quit()
 
 
+# FIXME: Don't extends from ABC (error type between menus)
 class BaseMenu(ABC, Menu):
     pass
 
 
+class AboutMenu(BaseMenu):
+    pass
+
+
 class MainMenu(BaseMenu):
-    def __init__(self, size: Tuple[int, int], game=None) -> None:
+    def __init__(self, size: Tuple[int, int]) -> None:
         """ Initialize of 'MainMenu' object with 'BaseMenu' interface """
 
         super().__init__(
@@ -105,20 +135,21 @@ class MainMenu(BaseMenu):
             center_content=True,
             theme=pygame_menu.themes.THEME_DARK
         )
-        self._game = game() if game else Game()
-        self._menu_items = [
-            ('Start game', None),
+        self.game = Game()
+        about_menu = AboutMenu('About', self.get_width(), self.get_height())
+        self._menu_items: List[Tuple[str, Command]] = [
+            ('Start game', StartGameCommand(self.game)),
             ('Settings', None),
-            ('About', None),
+            ('About', AboutCommand(about_menu)),
             ('Quit', QuitCommand())
         ]
         self.add.selector('Select game', [('Snake', 1), ('Tetris', 2)])
 
         for title, command in self._menu_items:
-            if command:
+            if command and isinstance(command, Command):
                 self.add.button(
                     title=title,
-                    action=command()
+                    action=command.execute,
                 )
             else:
                 self.add.button(
@@ -126,7 +157,8 @@ class MainMenu(BaseMenu):
                 )
 
     def select_game(self):
-        return self._game.run()
+        print('start game')
+        # return self._game.run()
 
 
 class PauseMenu(BaseMenu):

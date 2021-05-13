@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 
-import pygame_menu
+import pygame_menu.events
+from pygame.locals import QUIT
 
 
 class Command(ABC):
     def __call__(self, *args, **kwargs):
-        return self.execute()
+        self.execute()
 
     @abstractmethod
     def execute(self):
@@ -20,6 +21,7 @@ class StartGameCommand(Command):
 
     def execute(self):
         self._game.run()
+        return 'game run'
 
 
 class PauseGameCommand(Command):
@@ -28,16 +30,22 @@ class PauseGameCommand(Command):
 
     def execute(self):
         self._game.pause()
+        return 'game pause'
 
 
 class AboutCommand(Command):
     def __init__(self, about_menu):
         self._about_menu = about_menu
+        self.execute = about_menu
 
     def execute(self):
-        return self._about_menu
+        # return self._about_menu
+        pass
 
 
 class QuitCommand(Command):
+    def __init__(self):
+        self.execute = pygame_menu.events.EXIT
+
     def execute(self):
-        return pygame_menu.events.EXIT
+        pass
