@@ -2,7 +2,7 @@ from pygame.sprite import Sprite
 from pygame import Surface, Color
 
 from common.config import (BLOCK_SIZE, BLOCK_SIZE_TUPLE)
-from common.other import MyColor
+from common.tools import MyColor
 from common.position import Position
 
 

@@ -9,7 +9,7 @@ from common.config import (
     LEFT, RIGHT, UP, DOWN
 )
 from common.position import Position
-from common.other import MyColor
+from common.tools import MyColor
 from common.block import Block
 
 Window = NamedTuple('window', [('width', int), ('height', int)])

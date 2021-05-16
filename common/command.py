@@ -1,17 +1,22 @@
 from abc import ABC, abstractmethod
 
-import pygame_menu.events
-from pygame.locals import QUIT
+from common.frames.menu_frame import MenuFrame
+
+from pygame_menu.events import BACK, EXIT
 
 
 class Command(ABC):
+    """
+    Abstract class for application menus commands
+    (Command pattern)
+    """
     def __call__(self, *args, **kwargs):
         self.execute()
 
     @abstractmethod
     def execute(self):
         raise NotImplementedError(
-            'Обязательно создание метода execute'
+            'Обязательно создание метода или свойства execute'
         )
 
 
@@ -33,19 +38,27 @@ class PauseGameCommand(Command):
         return 'game pause'
 
 
-class AboutCommand(Command):
-    def __init__(self, about_menu):
-        self._about_menu = about_menu
-        self.execute = about_menu
+class SettingsCommand(Command):
+    def __init__(self, settings_menu: MenuFrame):
+        self.settings_menu = settings_menu
 
     def execute(self):
-        # return self._about_menu
-        pass
+        return self.settings_menu.menu
+
+
+class AboutCommand(Command):
+    def __init__(self, about_menu: MenuFrame):
+        self.about_menu = about_menu
+
+    def execute(self):
+        return self.about_menu.menu
+
+
+class BackCommand(Command):
+    def execute(self):
+        return BACK
 
 
 class QuitCommand(Command):
-    def __init__(self):
-        self.execute = pygame_menu.events.EXIT
-
     def execute(self):
-        pass
+        return EXIT

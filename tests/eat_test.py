@@ -1,9 +1,10 @@
-from common.other import MyColor
+from common.tools import MyColor
 from pySnake.eat import Eat
 from unittest import TestCase, main
 
 BASE_X = 20
 BASE_Y = 20
+
 
 class EatTest(TestCase):
 
