@@ -4,18 +4,18 @@ from common.command import (
     QuitCommand
 )
 
-from common.frames.menu_frame import MenuFrame, Surface
+from common.frames.menu_frame import MenuFrame
 from common.frames.about_menu_frame import AboutMenuFrame
 from common.frames.settings_menu_frame import SettingsMenuFrame
 
 
 class MainMenuFrame(MenuFrame):
 
-    def __init__(self, parent_window: Surface):
-        super().__init__(parent_window, title_menu='MainMenu')
+    def __init__(self, application):
+        super().__init__(application, title_menu='MainMenu')
 
-        about_menu = AboutMenuFrame(self._parent)
-        settings_menu = SettingsMenuFrame(self._parent)
+        about_menu = AboutMenuFrame(application)
+        settings_menu = SettingsMenuFrame(application)
 
         self._menu.add.selector(
             'Select game',

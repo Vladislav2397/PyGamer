@@ -1,17 +1,17 @@
 import pygame
+from pygame.display import set_mode, flip
 from pygame.locals import (
     K_ESCAPE, KEYDOWN, QUIT
 )
-from pygame import display
 
 from common.config import (
     WINDOW_SIZE
 )
 
-from common.tools import Window
+from common.tools import Window, SingletonMeta
 
-from common.frames.main_menu_frame import MainMenuFrame
-
+# from common.frames.main_menu_frame import MainMenuFrame
+from pySnake.game_frame import SnakeGameFrame
 
 # TODO: Add debug mode (optional)
 # TODO: Add the end of the game =>
@@ -29,7 +29,7 @@ from common.frames.main_menu_frame import MainMenuFrame
 # PlayCommand, PauseCommand, SetGameCommand, AboutCommand, QuitCommand
 
 
-class Application:
+class Application(metaclass=SingletonMeta):
 
     pygame.init()
 
@@ -37,19 +37,30 @@ class Application:
         """ Initialize of 'Application' object """
 
         self._is_enabled = True
-        self._window = display.set_mode(Window().size or WINDOW_SIZE)
-        self._width, self._height = self._window.get_size()
+        self._window = set_mode(Window().size or WINDOW_SIZE)
 
-        self.main_surface = MainMenuFrame(self._window)
+        self.main_surface = SnakeGameFrame(self)
 
         self.run()
 
+    def __del__(self) -> None:
+        """ The exit from game """
+
+        print("Exit from PyGamer")
+        pygame.quit()
+
+    @property
+    def window(self):
+        return self._window
+
     def run(self):
+        """ Started main loop of application """
         while self._is_enabled:
             self.draw()
-            display.flip()
+            flip()
 
     def draw(self):
+        """ Draw one frame per second on window """
         events = pygame.event.get()
 
         for event in events:
@@ -62,17 +73,8 @@ class Application:
         self.main_surface.loop(events)
 
     def stop(self):
+        """ Stopped main loop of application """
         self._is_enabled = False
-
-    def __del__(self) -> None:
-        """ The exit from game """
-
-        print("Exit from PyGamer")
-        pygame.quit()
-
-
-class SnakeGameFrame:
-    pass
 
 
 if __name__ == "__main__":
