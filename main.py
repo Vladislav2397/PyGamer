@@ -1,8 +1,7 @@
 import pygame
+from pygame.locals import QUIT
 from pygame.display import set_mode, flip
-from pygame.locals import (
-    K_ESCAPE, KEYDOWN, QUIT
-)
+from pygame.surface import Surface
 
 from common.config import (
     WINDOW_SIZE
@@ -10,8 +9,7 @@ from common.config import (
 
 from common.tools import Window, SingletonMeta
 
-# from common.frames.main_menu_frame import MainMenuFrame
-from pySnake.game_frame import SnakeGameFrame
+from common.frames.main_menu_frame import MainMenuFrame
 
 # TODO: Add debug mode (optional)
 # TODO: Add the end of the game =>
@@ -28,6 +26,9 @@ from pySnake.game_frame import SnakeGameFrame
 # menu items - MenuItemCommand (pattern command)
 # PlayCommand, PauseCommand, SetGameCommand, AboutCommand, QuitCommand
 
+# Command manager
+# CommandInvoker -> Command => CommandReceiver
+
 
 class Application(metaclass=SingletonMeta):
 
@@ -39,7 +40,7 @@ class Application(metaclass=SingletonMeta):
         self._is_enabled = True
         self._window = set_mode(Window().size or WINDOW_SIZE)
 
-        self.main_surface = SnakeGameFrame(self)
+        self.main_surface = None
 
         self.run()
 
@@ -52,6 +53,9 @@ class Application(metaclass=SingletonMeta):
     @property
     def window(self):
         return self._window
+
+    def set_surface(self, surface: Surface):
+        self.main_surface = surface
 
     def run(self):
         """ Started main loop of application """
@@ -66,9 +70,6 @@ class Application(metaclass=SingletonMeta):
         for event in events:
             if event.type == QUIT:
                 self.stop()
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.stop()
 
         self.main_surface.loop(events)
 

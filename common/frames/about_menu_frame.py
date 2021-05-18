@@ -1,4 +1,4 @@
-from common.frames.menu_frame import MenuFrame, Surface
+from common.frames.menu_frame import MenuFrame
 
 
 class AboutMenuFrame(MenuFrame):

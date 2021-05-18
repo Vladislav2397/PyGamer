@@ -1,6 +1,6 @@
 from time import time
 from pygame.locals import (
-    KEYDOWN, K_LEFT, K_RIGHT, K_UP, K_DOWN
+    KEYDOWN, K_LEFT, K_RIGHT, K_UP, K_DOWN, K_ESCAPE
 )
 from pygame.time import Clock
 from pygame.surface import Surface
@@ -44,7 +44,9 @@ class SnakeGameFrame:
     def loop(self, events):
         for event in events:
             if event.type == KEYDOWN:
-                if event.key == K_LEFT:
+                if event.key == K_ESCAPE:
+                    pass
+                elif event.key == K_LEFT:
                     self.snake.turn(LEFT)
                 elif event.key == K_RIGHT:
                     self.snake.turn(RIGHT)
@@ -62,6 +64,9 @@ class SnakeGameFrame:
             self._window.fill(MyColor.BLACK)
             self._all_groups.draw(self._window)
             self._app.window.blit(self._window, (0, 0))
+
+    def set_as_main_surface(self):
+        self._app.set_surface(self)
 
     @property
     def is_time(self) -> bool:

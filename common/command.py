@@ -1,15 +1,20 @@
 from abc import ABC, abstractmethod
 
-from common.frames.menu_frame import MenuFrame
-
 from pygame_menu.events import BACK, EXIT
+
+from common.receiver import ApplicationReceiver
+
+from common.frames.menu_frame import MenuFrame
 
 
 class Command(ABC):
     """
-    Abstract class for application menus commands
+    Abstract class for application menu commands
     (Command pattern)
     """
+
+    receiver = ApplicationReceiver()
+
     def __call__(self, *args, **kwargs):
         self.execute()
 
@@ -25,8 +30,10 @@ class StartGameCommand(Command):
         self._game = game
 
     def execute(self):
-        self._game.run()
-        return 'game run'
+        return self._execute
+
+    def _execute(self):
+        self._game.set_as_main_surface()
 
 
 class PauseGameCommand(Command):
@@ -38,7 +45,16 @@ class PauseGameCommand(Command):
         return 'game pause'
 
 
-class SettingsCommand(Command):
+class MainMenuCommand(Command):
+    def __init__(self, main_menu: MenuFrame):
+        self.main_menu = main_menu
+
+    def execute(self):
+        # TODO: Set main surface for application
+        return 'Success'
+
+
+class SettingsMenuCommand(Command):
     def __init__(self, settings_menu: MenuFrame):
         self.settings_menu = settings_menu
 
@@ -46,7 +62,7 @@ class SettingsCommand(Command):
         return self.settings_menu.menu
 
 
-class AboutCommand(Command):
+class AboutMenuCommand(Command):
     def __init__(self, about_menu: MenuFrame):
         self.about_menu = about_menu
 
