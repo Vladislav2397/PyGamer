@@ -1,20 +1,18 @@
-from pygame.surface import Surface
 from pygame_menu.menu import Menu
 from pygame_menu.themes import THEME_DARK
 
-from common.tools import Window
+from common.config import MAIN_WINDOW_SURFACE
+from common.frames.frame import Frame
 
 
-class MenuFrame(Surface):
+class MenuFrame(Frame):
 
-    def __init__(self, application, title_menu: str):
-        window = Window()
-        super().__init__(window)
-        self._app = application
+    def __init__(self, title_menu: str):
+        super().__init__()
         self._menu = Menu(
             title_menu,
-            window.width,
-            window.height,
+            MAIN_WINDOW_SURFACE.get_width(),
+            MAIN_WINDOW_SURFACE.get_height(),
             theme=THEME_DARK
         )
 
@@ -22,7 +20,10 @@ class MenuFrame(Surface):
     def menu(self):
         return self._menu
 
-    def loop(self, events):
+    def update(self, events):
         if self._menu.is_enabled():
             self._menu.update(events)
-            self._menu.draw(self._app.window)
+
+    def draw(self, parent_window=None):
+        if self._menu.is_enabled():
+            self._menu.draw(parent_window or MAIN_WINDOW_SURFACE)

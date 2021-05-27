@@ -1,43 +1,43 @@
+from pygame.locals import KEYDOWN, K_ESCAPE
+
 from common.command import (
     StartGameCommand,
     SettingsMenuCommand,
     AboutMenuCommand,
+    ExitCommand,
     QuitCommand
 )
 
 from common.frames.menu_frame import MenuFrame
-from common.frames.about_menu_frame import AboutMenuFrame
-from common.frames.settings_menu_frame import SettingsMenuFrame
-
-from pySnake.game_frame import SnakeGameFrame
 
 
 class MainMenuFrame(MenuFrame):
 
-    def __init__(self, application):
-        super().__init__(application, title_menu='MainMenu')
+    menu_content = {
+        'Start game': StartGameCommand().execute,
+        'Settings': SettingsMenuCommand().execute,
+        'About': AboutMenuCommand().execute,
+        'Quit': ExitCommand().execute()
+    }
 
-        snake_game = SnakeGameFrame(application)
-        about_menu = AboutMenuFrame(application)
-        settings_menu = SettingsMenuFrame(application)
+    def __init__(self):
+        super().__init__(title_menu='MainMenu')
 
-        self._menu.add.selector(
+        self.menu.add.selector(
             'Select game',
             [('Snake', 1), ('Tetris', 2)]
         )
-        self._menu.add.button(
-            'Start game',
-            StartGameCommand(snake_game).execute()
-        )
-        self._menu.add.button(
-            'Settings',
-            SettingsMenuCommand(settings_menu).execute()
-        )
-        self._menu.add.button(
-            'About',
-            AboutMenuCommand(about_menu).execute()
-        )
-        self._menu.add.button(
-            'Quit',
-            QuitCommand().execute()
-        )
+        for name, command in self.menu_content.items():
+            self.menu.add.button(
+                name, command
+            )
+
+    def update(self, events=None):
+        for event in events:
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    QuitCommand().execute()
+        super().update(events)
+
+    def draw(self, parent_window=None):
+        super().draw()

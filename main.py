@@ -1,15 +1,14 @@
 import pygame
 from pygame.locals import QUIT
-from pygame.display import set_mode, flip
+from pygame.display import flip
 from pygame.surface import Surface
 
-from common.config import (
-    WINDOW_SIZE
-)
+from common.tools import SingletonMeta
 
-from common.tools import Window, SingletonMeta
+from common.config import MAIN_WINDOW_SURFACE
 
 from common.frames.main_menu_frame import MainMenuFrame
+# from pySnake.game_frame import SnakeGameFrame
 
 # TODO: Add debug mode (optional)
 # TODO: Add the end of the game =>
@@ -29,20 +28,25 @@ from common.frames.main_menu_frame import MainMenuFrame
 # Command manager
 # CommandInvoker -> Command => CommandReceiver
 
+# Adapter for pygame menu
+
+# SOLID:
+
+# - Single Responsible Principle (Принцип единой ответственности)
+# - Open/Close Principle (Принцип открытости/закрытости)
+# - Liskov Substitution Principle (Принцип подстановки Лисков)
+# - Interface Segregation Principle (Принцип разделения интерфейса)
+# - Dependency Inversion Principle (Принцип инверсии зависимостей)
+
 
 class Application(metaclass=SingletonMeta):
-
-    pygame.init()
 
     def __init__(self) -> None:
         """ Initialize of 'Application' object """
 
         self._is_enabled = True
-        self._window = set_mode(Window().size or WINDOW_SIZE)
-
-        self.main_surface = None
-
-        self.run()
+        self._window = MAIN_WINDOW_SURFACE
+        self.main_frame = MainMenuFrame()
 
     def __del__(self) -> None:
         """ The exit from game """
@@ -50,28 +54,33 @@ class Application(metaclass=SingletonMeta):
         print("Exit from PyGamer")
         pygame.quit()
 
-    @property
-    def window(self):
-        return self._window
-
     def set_surface(self, surface: Surface):
-        self.main_surface = surface
+        self.main_frame = surface
 
     def run(self):
         """ Started main loop of application """
         while self._is_enabled:
+            self.update()
             self.draw()
             flip()
 
-    def draw(self):
-        """ Draw one frame per second on window """
+    def update(self):
+        """ Check events and update data """
+
         events = pygame.event.get()
 
         for event in events:
             if event.type == QUIT:
                 self.stop()
 
-        self.main_surface.loop(events)
+        self.main_frame.update(events)
+
+    def draw(self):
+        """ Draw one frame per second on window """
+
+        self.main_frame.draw(self._window)
+
+        # self.main_surface.draw()
 
     def stop(self):
         """ Stopped main loop of application """
@@ -79,4 +88,4 @@ class Application(metaclass=SingletonMeta):
 
 
 if __name__ == "__main__":
-    Application()
+    Application().run()

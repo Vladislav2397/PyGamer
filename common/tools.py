@@ -3,6 +3,8 @@ from typing import Tuple, NamedTuple
 from pygame.sprite import Group
 from pygame.color import Color
 
+from common.config import WINDOW_SIZE
+
 
 class SingletonMeta(type):
     _instances = {}
@@ -21,8 +23,8 @@ class AllSprites(Group, metaclass=SingletonMeta):
 
 class Window(NamedTuple):
     """ Application window size namedtuple """
-    width: int = 800
-    height: int = 600
+    width: int = WINDOW_SIZE[0]
+    height: int = WINDOW_SIZE[1]
 
     @property
     def size(self) -> Tuple[int, int]:

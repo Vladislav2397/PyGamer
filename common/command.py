@@ -2,18 +2,12 @@ from abc import ABC, abstractmethod
 
 from pygame_menu.events import BACK, EXIT
 
-from common.receiver import ApplicationReceiver
-
-from common.frames.menu_frame import MenuFrame
-
 
 class Command(ABC):
     """
-    Abstract class for application menu commands
+    Abstract class (interface) for application menu commands
     (Command pattern)
     """
-
-    receiver = ApplicationReceiver()
 
     def __call__(self, *args, **kwargs):
         self.execute()
@@ -26,14 +20,15 @@ class Command(ABC):
 
 
 class StartGameCommand(Command):
-    def __init__(self, game):
-        self._game = game
+    def __init__(self):
+        from pySnake.game_frame import SnakeGameFrame
+
+        self._game = SnakeGameFrame()
 
     def execute(self):
-        return self._execute
+        from main import Application
 
-    def _execute(self):
-        self._game.set_as_main_surface()
+        Application().set_surface(self._game)
 
 
 class PauseGameCommand(Command):
@@ -41,33 +36,40 @@ class PauseGameCommand(Command):
         self._game = game
 
     def execute(self):
-        self._game.pause()
-        return 'game pause'
+        print(self._game)
 
 
 class MainMenuCommand(Command):
-    def __init__(self, main_menu: MenuFrame):
-        self.main_menu = main_menu
+    def __init__(self):
+        from common.frames.main_menu_frame import MainMenuFrame
 
+        self.frame = MainMenuFrame().menu
+
+    @property
     def execute(self):
-        # TODO: Set main surface for application
-        return 'Success'
+        return self.frame
 
 
 class SettingsMenuCommand(Command):
-    def __init__(self, settings_menu: MenuFrame):
-        self.settings_menu = settings_menu
+    def __init__(self):
+        from common.frames.settings_menu_frame import SettingsMenuFrame
 
+        self.frame = SettingsMenuFrame().menu
+
+    @property
     def execute(self):
-        return self.settings_menu.menu
+        return self.frame
 
 
 class AboutMenuCommand(Command):
-    def __init__(self, about_menu: MenuFrame):
-        self.about_menu = about_menu
+    def __init__(self):
+        from common.frames.about_menu_frame import AboutMenuFrame
 
+        self.frame = AboutMenuFrame().menu
+
+    @property
     def execute(self):
-        return self.about_menu.menu
+        return self.frame
 
 
 class BackCommand(Command):
@@ -75,6 +77,13 @@ class BackCommand(Command):
         return BACK
 
 
-class QuitCommand(Command):
+class ExitCommand(Command):
     def execute(self):
         return EXIT
+
+
+class QuitCommand(Command):
+    def execute(self):
+        from main import Application
+
+        Application().stop()
