@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-from pygame.surface import Surface
 from pygame_menu.menu import Menu
 
 from common.config import MAIN_WINDOW_SURFACE
@@ -14,10 +13,19 @@ class Frame(ABC):
         )
 
     @abstractmethod
-    def draw(self, parent_window):
+    def draw(self, window):
         raise NotImplementedError(
             'Обязательна реализация метода draw'
         )
+
+
+class HasParentMixin:
+    def __init__(self, parent_frame):
+        self._parent_frame = parent_frame
+
+    @property
+    def parent(self) -> Frame:
+        return self._parent_frame
 
 
 class MenuFrame(Frame):
@@ -36,15 +44,3 @@ class MenuFrame(Frame):
     def draw(self, parent_window):
         if self._menu.is_enabled():
             self._menu.draw(MAIN_WINDOW_SURFACE)
-
-
-class GameFrame(Frame):
-    def __init__(self):
-        super().__init__(MAIN_WINDOW_SURFACE.get_size())
-        self._frame = Surface(MAIN_WINDOW_SURFACE.get_size())
-
-    def update(self, events):
-        pass
-
-    def draw(self, parent_window):
-        pass

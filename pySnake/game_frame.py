@@ -15,18 +15,14 @@ from common.config import (
     MAIN_WINDOW_SURFACE
 )
 
-from common.command import MainMenuCommand
-
 
 class SnakeGameFrame(Frame):
 
     def __init__(self) -> None:
         """ Initialize of 'GAME' object """
 
-        self._app = None
         self._window = Surface(MAIN_WINDOW_SURFACE.get_size())
         self._width, self._height = self._window.get_size()
-        self._is_play = True
         self._timer = time()
         self._time = Clock()
 
@@ -49,7 +45,7 @@ class SnakeGameFrame(Frame):
         for event in events:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    MainMenuCommand().execute()
+                    pass
                 elif event.key == K_SPACE:
                     self.pause()
                 elif event.key == K_LEFT:

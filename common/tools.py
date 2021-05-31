@@ -50,10 +50,3 @@ class MyColor(NamedTuple):
     DIMGRAY = Color(105, 105, 105)
 
     WHITESMOKE = Color(245, 245, 245)
-
-
-class Frames(NamedTuple):
-    """
-    Common frames for all application
-    """
-    pass

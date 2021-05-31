@@ -1,6 +1,7 @@
 import pygame
 
-pygame.init()
+if not pygame.get_init():
+    pygame.init()
 
 BLOCK_SIZE = 20
 BLOCK_SIZE_TUPLE = (BLOCK_SIZE, BLOCK_SIZE)
@@ -12,7 +13,7 @@ WINDOW_SIZE = (
 MAIN_WINDOW_SURFACE = pygame.display.set_mode(WINDOW_SIZE)
 
 FPS = 30
-TIMEOUT = 4
+TIMEOUT = 3
 SPEED = 0.5 - (0.1 * TIMEOUT)
 
 LEFT = 'left'

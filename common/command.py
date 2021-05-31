@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from pygame_menu.events import BACK, EXIT
+from pygame_menu.events import BACK
 
 
-class Command(ABC):
+class CommandBase(ABC):
     """
     Abstract class (interface) for application menu commands
     (Command pattern)
@@ -19,7 +19,15 @@ class Command(ABC):
         )
 
 
-class StartGameCommand(Command):
+# class MenuDrawableMixin:
+#     def __init__(self, menu):
+#         from pygame_menu import Menu
+
+#         if not isinstance(menu, Menu):
+#             raise TypeError('type "menu" is not correct')
+
+
+class StartGameCommand(CommandBase):
     def __init__(self):
         from pySnake.game_frame import SnakeGameFrame
 
@@ -28,10 +36,10 @@ class StartGameCommand(Command):
     def execute(self):
         from main import Application
 
-        Application().set_surface(self._game)
+        Application().set_frame(self._game)
 
 
-class PauseGameCommand(Command):
+class PauseGameCommand(CommandBase):
     def __init__(self, game):
         self._game = game
 
@@ -39,7 +47,7 @@ class PauseGameCommand(Command):
         print(self._game)
 
 
-class MainMenuCommand(Command):
+class MainMenuCommand(CommandBase):
     def __init__(self):
         from common.frames.main_menu_frame import MainMenuFrame
 
@@ -50,7 +58,7 @@ class MainMenuCommand(Command):
         return self.frame
 
 
-class SettingsMenuCommand(Command):
+class SettingsMenuCommand(CommandBase):
     def __init__(self):
         from common.frames.settings_menu_frame import SettingsMenuFrame
 
@@ -61,7 +69,7 @@ class SettingsMenuCommand(Command):
         return self.frame
 
 
-class AboutMenuCommand(Command):
+class AboutMenuCommand(CommandBase):
     def __init__(self):
         from common.frames.about_menu_frame import AboutMenuFrame
 
@@ -72,17 +80,12 @@ class AboutMenuCommand(Command):
         return self.frame
 
 
-class BackCommand(Command):
+class BackCommand(CommandBase):
     def execute(self):
         return BACK
 
 
-class ExitCommand(Command):
-    def execute(self):
-        return EXIT
-
-
-class QuitCommand(Command):
+class QuitCommand(CommandBase):
     def execute(self):
         from main import Application
 

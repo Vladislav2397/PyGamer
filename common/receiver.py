@@ -7,4 +7,4 @@ class ApplicationReceiver(metaclass=SingletonMeta):
     app = Application()
 
     def set_frame(self, frame):
-        self.app.set_surface(frame)
+        self.app.set_frame(frame)

@@ -4,7 +4,6 @@ from common.command import (
     StartGameCommand,
     SettingsMenuCommand,
     AboutMenuCommand,
-    ExitCommand,
     QuitCommand
 )
 
@@ -14,10 +13,10 @@ from common.frames.menu_frame import MenuFrame
 class MainMenuFrame(MenuFrame):
 
     menu_content = {
-        'Start game': StartGameCommand().execute,
-        'Settings': SettingsMenuCommand().execute,
-        'About': AboutMenuCommand().execute,
-        'Quit': ExitCommand().execute()
+        'Start game': StartGameCommand(),
+        'Settings': SettingsMenuCommand(),
+        'About': AboutMenuCommand(),
+        'Quit': QuitCommand()
     }
 
     def __init__(self):
@@ -29,7 +28,7 @@ class MainMenuFrame(MenuFrame):
         )
         for name, command in self.menu_content.items():
             self.menu.add.button(
-                name, command
+                name, command.execute
             )
 
     def update(self, events=None):

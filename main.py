@@ -1,14 +1,14 @@
 import pygame
 from pygame.locals import QUIT
 from pygame.display import flip
-from pygame.surface import Surface
 
 from common.tools import SingletonMeta
 
 from common.config import MAIN_WINDOW_SURFACE
 
-from common.frames.main_menu_frame import MainMenuFrame
+from common.frames.frame import Frame
 # from pySnake.game_frame import SnakeGameFrame
+from common.frames.main_menu_frame import MainMenuFrame
 
 # TODO: Add debug mode (optional)
 # TODO: Add the end of the game =>
@@ -28,7 +28,7 @@ from common.frames.main_menu_frame import MainMenuFrame
 # Command manager
 # CommandInvoker -> Command => CommandReceiver
 
-# Adapter for pygame menu
+# May be I need a app manager class as command receiver
 
 # SOLID:
 
@@ -41,12 +41,10 @@ from common.frames.main_menu_frame import MainMenuFrame
 
 class Application(metaclass=SingletonMeta):
 
-    def __init__(self) -> None:
-        """ Initialize of 'Application' object """
-
-        self._is_enabled = True
-        self._window = MAIN_WINDOW_SURFACE
-        self.main_frame = MainMenuFrame()
+    is_enabled = True
+    is_pause = False
+    _window = MAIN_WINDOW_SURFACE
+    _main_frame = MainMenuFrame()
 
     def __del__(self) -> None:
         """ The exit from game """
@@ -54,12 +52,12 @@ class Application(metaclass=SingletonMeta):
         print("Exit from PyGamer")
         pygame.quit()
 
-    def set_surface(self, surface: Surface):
-        self.main_frame = surface
+    def set_frame(self, frame: Frame):
+        self._main_frame = frame
 
     def run(self):
         """ Started main loop of application """
-        while self._is_enabled:
+        while self.is_enabled and not self.is_pause:
             self.update()
             self.draw()
             flip()
@@ -73,19 +71,25 @@ class Application(metaclass=SingletonMeta):
             if event.type == QUIT:
                 self.stop()
 
-        self.main_frame.update(events)
+        self._main_frame.update(events)
 
     def draw(self):
         """ Draw one frame per second on window """
 
-        self.main_frame.draw(self._window)
+        self._main_frame.draw(self._window)
 
-        # self.main_surface.draw()
+    def pause(self):
+        self.is_pause = True
+
+    def resume(self):
+        self.is_pause = False
 
     def stop(self):
         """ Stopped main loop of application """
-        self._is_enabled = False
+        self.is_enabled = False
 
 
 if __name__ == "__main__":
-    Application().run()
+    from manager import ApplicationManager
+
+    ApplicationManager().run()
