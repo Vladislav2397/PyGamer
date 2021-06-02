@@ -50,3 +50,9 @@ class MyColor(NamedTuple):
     DIMGRAY = Color(105, 105, 105)
 
     WHITESMOKE = Color(245, 245, 245)
+
+
+def init_app():
+    import pygame
+
+    pygame.init()

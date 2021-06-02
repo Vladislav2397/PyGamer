@@ -1,8 +1,5 @@
 import pygame
 
-if not pygame.get_init():
-    pygame.init()
-
 BLOCK_SIZE = 20
 BLOCK_SIZE_TUPLE = (BLOCK_SIZE, BLOCK_SIZE)
 WINDOW_SIZE = (

@@ -1,3 +1,8 @@
+import pygame
+
+pygame.init()
+
+
 class ApplicationManager:
     """ Manager for application (Receiver commands) """
     from main import Application
@@ -19,13 +24,10 @@ class ApplicationManager:
     def set_frame(self, frame):
         self._app.set_frame(frame)
 
-    # Example
-    # commands = {
-    #     'draw main menu': DrawMainMenuCommand()
-    # }
 
-    # def __init__(self):
-    #     self._app = Application()
+if __name__ == "__main__":
+    from common.tools import init_app
 
-    # def execute_command(self, command_name):
-    #     self.commands[command_name].execute()
+    init_app()
+    app = ApplicationManager()
+    app.run()

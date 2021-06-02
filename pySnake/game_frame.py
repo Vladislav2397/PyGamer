@@ -17,7 +17,6 @@ from common.config import (
 
 
 class SnakeGameFrame(Frame):
-
     def __init__(self) -> None:
         """ Initialize of 'GAME' object """
 
@@ -47,7 +46,7 @@ class SnakeGameFrame(Frame):
                 if event.key == K_ESCAPE:
                     pass
                 elif event.key == K_SPACE:
-                    self.pause()
+                    pass
                 elif event.key == K_LEFT:
                     self.snake.turn(LEFT)
                 elif event.key == K_RIGHT:
@@ -68,9 +67,6 @@ class SnakeGameFrame(Frame):
             self._window.fill(MyColor.BLACK)
             self._all_groups.draw(self._window)
             app_frame.blit(self._window, (0, 0))
-
-    def pause(self):
-        pass
 
     @property
     def is_time(self) -> bool:

@@ -1,6 +1,6 @@
 from common.frames.menu_frame import MenuFrame
 
-from common.command import BackCommand
+from common.commands.menu_command import BackCommand
 
 
 class SettingsMenuFrame(MenuFrame):

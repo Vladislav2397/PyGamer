@@ -2,12 +2,10 @@ import pygame
 from pygame.locals import QUIT
 from pygame.display import flip
 
-from common.tools import SingletonMeta
-
 from common.config import MAIN_WINDOW_SURFACE
 
 from common.frames.frame import Frame
-# from pySnake.game_frame import SnakeGameFrame
+
 from common.frames.main_menu_frame import MainMenuFrame
 
 # TODO: Add debug mode (optional)
@@ -39,18 +37,15 @@ from common.frames.main_menu_frame import MainMenuFrame
 # - Dependency Inversion Principle (Принцип инверсии зависимостей)
 
 
-class Application(metaclass=SingletonMeta):
+class Application:
+    import pygame
+
+    pygame.init()
 
     is_enabled = True
     is_pause = False
     _window = MAIN_WINDOW_SURFACE
     _main_frame = MainMenuFrame()
-
-    def __del__(self) -> None:
-        """ The exit from game """
-
-        print("Exit from PyGamer")
-        pygame.quit()
 
     def set_frame(self, frame: Frame):
         self._main_frame = frame
@@ -71,12 +66,13 @@ class Application(metaclass=SingletonMeta):
             if event.type == QUIT:
                 self.stop()
 
-        self._main_frame.update(events)
+        self._main_frame.update(events=events)
 
     def draw(self):
         """ Draw one frame per second on window """
 
-        self._main_frame.draw(self._window)
+        if self._main_frame:
+            self._main_frame.draw(self._window)
 
     def pause(self):
         self.is_pause = True
@@ -87,9 +83,5 @@ class Application(metaclass=SingletonMeta):
     def stop(self):
         """ Stopped main loop of application """
         self.is_enabled = False
-
-
-if __name__ == "__main__":
-    from manager import ApplicationManager
-
-    ApplicationManager().run()
+        print("Exit from PyGamer")
+        pygame.quit()
