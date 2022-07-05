@@ -1,3 +1,5 @@
+from typing import Union
+
 import pygame
 from pygame.locals import (
     K_UP, K_DOWN, K_LEFT, K_RIGHT,
@@ -15,8 +17,10 @@ from pySnake.snake import Snake
 from common.config import (
     WINDOW_SIZE,
     LEFT, RIGHT, UP, DOWN,
-    FPS, TIMEOUT
+    FPS, TIMEOUT,
 )
+from common.base_game import BaseGame
+from main_menu import MainMenu
 
 
 # TODO: Add debug mode (optional)
@@ -28,9 +32,12 @@ from common.config import (
 
 class Game:
     """ Base class of game """
+    
+    game: Union[BaseGame, None] = None
+    main_menu = MainMenu()
 
     def __init__(self, window_size: tuple = None) -> None:
-        """ Initalize of 'GAME' object """
+        """ Initialize of 'GAME' object """
 
         pygame.init()
 
@@ -40,12 +47,12 @@ class Game:
         self._timer = time()
         self._time = Clock()
 
-        self.snake = Snake(
-            color=MyColor.GREEN,
-            window_size=(self._width, self._height)
-        )
-        self.eat = Eat(pos=[40, 20], color=MyColor.RED)
-        self._all_groups = Group(self.snake, self.eat)
+        # self.snake = Snake(
+        #     color=MyColor.GREEN,
+        #     window_size=(self._width, self._height)
+        # )
+        # self.eat = Eat(pos=[40, 20], color=MyColor.RED)
+        # self._all_groups = Group(self.snake, self.eat)
 
     def run(self) -> None:
         """ Run main loop of game """
@@ -54,14 +61,15 @@ class Game:
 
         while self._is_play:
             self._check_events()
-            self._all_groups.add([*self.snake._body, self.eat])
+            # self._all_groups.add([*self.snake._body, self.eat])
             if self.is_time:
-                self.snake.move()
-                self._check_colliderect()
-                self.eat.update()
-                self.snake.update()
-                self._window.fill(MyColor.BLACK)
-                self._all_groups.draw(self._window)
+                # self.snake.move()
+                # self._check_colliderect()
+                # self.eat.update()
+                # self.snake.update()
+                # self._window.fill(MyColor.BLACK)
+                # self._all_groups.draw(self._window)
+                self.main_menu.draw(self._window)
             display.flip()
 
     @property
@@ -78,25 +86,25 @@ class Game:
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.close()
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.close()
-                elif event.key == K_LEFT:
-                    self.snake.turn(LEFT)
-                elif event.key == K_RIGHT:
-                    self.snake.turn(RIGHT)
-                elif event.key == K_UP:
-                    self.snake.turn(UP)
-                elif event.key == K_DOWN:
-                    self.snake.turn(DOWN)
+    #         elif event.type == KEYDOWN:
+    #             if event.key == K_ESCAPE:
+    #                 self.close()
+    #             elif event.key == K_LEFT:
+    #                 self.snake.turn(LEFT)
+    #             elif event.key == K_RIGHT:
+    #                 self.snake.turn(RIGHT)
+    #             elif event.key == K_UP:
+    #                 self.snake.turn(UP)
+    #             elif event.key == K_DOWN:
+    #                 self.snake.turn(DOWN)
 
-    def _check_colliderect(self):
-        """ Check has collide rect """
-
-        hit = collide_rect(self.snake.head, self.eat)
-        if hit:
-            self.snake.upgrade()
-            self.eat.upgrade(self.snake.get_positions)
+    # def _check_colliderect(self):
+    #     """ Check has collide rect """
+    #
+    #     hit = collide_rect(self.snake.head, self.eat)
+    #     if hit:
+    #         self.snake.upgrade()
+    #         self.eat.upgrade(self.snake.get_positions)
 
     def close(self) -> None:
         """ Close main loop of game """
