@@ -26,5 +26,9 @@ class BaseGame(ABC):
     def game_over(self):
         pass
     
+    @property
+    def is_close(self):
+        return self._is_close
+    
     def close(self):
         self._is_close = True

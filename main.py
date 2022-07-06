@@ -2,7 +2,6 @@ from typing import Union
 
 import pygame
 from pygame.locals import (
-    # K_UP, K_DOWN, K_LEFT, K_RIGHT, K_ESCAPE,
     KEYDOWN, QUIT
 )
 from pygame import display
@@ -10,17 +9,13 @@ from pygame.time import Clock
 
 from time import time
 
-# from pygame.sprite import Group, collide_rect
-# from pySnake.eat import Eat
-# from common.other import MyColor
-# from pySnake.snake import Snake
 from common.config import (
     WINDOW_SIZE,
-    # LEFT, RIGHT, UP, DOWN,
     FPS, TIMEOUT,
 )
 from common.base_game import BaseGame
-from main_menu import MainMenu
+from pySnake.main_menu import MainMenu
+from pySnake.game import SnakeGame
 
 
 # TODO: Add debug mode (optional)
@@ -32,13 +27,11 @@ from main_menu import MainMenu
 
 class Game:
     """ Base class of game """
-    
-    game: Union[BaseGame, None] = None
+    game: Union[BaseGame, None] = SnakeGame()
     main_menu = MainMenu()
 
     def __init__(self, window_size: tuple = None) -> None:
         """ Initialize of 'GAME' object """
-
         pygame.init()
 
         self._window = display.set_mode(window_size or WINDOW_SIZE)
@@ -49,20 +42,19 @@ class Game:
 
     def run(self) -> None:
         """ Run main loop of game """
-
         self._time.tick(FPS)
 
         while self._is_play:
             self._check_events()
             if self.is_time:
-                self.main_menu.run()
-                self.main_menu.draw(self._window)
+                self.game.run()
+                # self.main_menu.run()
+                # self.main_menu.draw(self._window)
             display.flip()
 
     @property
     def is_time(self) -> bool:
         """ It's property return boolean if is timeout """
-
         if self._timer < time():
             self._timer = time() + TIMEOUT
             return True
@@ -82,12 +74,10 @@ class Game:
     
     def close(self) -> None:
         """ Close main loop of game """
-
         self._is_play = False
 
     def __del__(self) -> None:
         """ The exit from game """
-
         print("Exit from PyGamer")
         pygame.quit()
 

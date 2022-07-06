@@ -5,7 +5,7 @@ from pygame import Color
 
 from common.config import (
     BLOCK_SIZE,
-    LEFT, RIGHT, UP, DOWN
+    LEFT, RIGHT, UP, DOWN, WINDOW_SIZE
 )
 from common.position import Position
 from common.other import MyColor
@@ -20,7 +20,7 @@ class Snake(Group):
     def __init__(
         self,
         pos: list = None,
-        window_size: tuple = None,
+        window_size: tuple = WINDOW_SIZE,
         color: Color = MyColor.GREEN,
         vector: str = RIGHT,
         *sprites

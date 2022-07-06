@@ -4,10 +4,7 @@ import pygame
 from pygame.surface import Surface
 from common.base_game import BaseGame
 from common.other import MyColor
-from pygame.locals import (
-    K_UP, K_DOWN, K_LEFT, K_RIGHT,
-    K_ESCAPE, K_KP_ENTER, K_RETURN, KEYDOWN, QUIT
-)
+from pygame.locals import K_UP, K_DOWN, K_RETURN
 
 
 class CycleIterator:
@@ -60,18 +57,12 @@ class MainMenu(BaseGame):
     @property
     def active_menu_item(self):
         return self.cycle_iterator.current
-    
-    @property
-    def is_close(self):
-        return self._is_close
 
     def check_events(self, event) -> None:
         """ Check keycode events """
         if event.key == K_UP:
-            print('up')
             self.cycle_iterator.prev()
         elif event.key == K_DOWN:
-            print('down')
             self.cycle_iterator.next()
         elif event.key == K_RETURN:
             self.on_enter()
