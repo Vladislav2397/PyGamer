@@ -1,11 +1,13 @@
 from time import time
+
+import pygame
 from pygame.time import Clock
 from abc import ABC, abstractmethod
-from common.config import (FPS)
 
 
 class BaseGame(ABC):
     def __init__(self):
+        self._is_close = False
         self._timer = time()
         self._time = Clock()
 
@@ -14,8 +16,15 @@ class BaseGame(ABC):
         return 0.2
     
     def run(self):
-        self._time.tick(FPS)
+        pass
+    
+    @abstractmethod
+    def check_events(self, event: pygame.event.Event):
+        pass
 
     @abstractmethod
     def game_over(self):
         pass
+    
+    def close(self):
+        self._is_close = True

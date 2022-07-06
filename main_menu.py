@@ -4,6 +4,40 @@ import pygame
 from pygame.surface import Surface
 from common.base_game import BaseGame
 from common.other import MyColor
+from pygame.locals import (
+    K_UP, K_DOWN, K_LEFT, K_RIGHT,
+    K_ESCAPE, K_KP_ENTER, K_RETURN, KEYDOWN, QUIT
+)
+
+
+class CycleIterator:
+    def __init__(self, arr):
+        self.array = arr
+        self.iterator = 0
+    
+    def next(self):
+        self.iterator += 1
+        
+        if self.iterator > (self.length - 1):
+            self.iterator = 0
+        
+        return self.array[self.iterator]
+    
+    def prev(self):
+        self.iterator -= 1
+    
+        if self.iterator < 0:
+            self.iterator = len(self.array) - 1
+    
+        return self.array[self.iterator]
+
+    @property
+    def current(self):
+        return self.array[self.iterator]
+        
+    @property
+    def length(self):
+        return len(self.array)
 
 
 class Menu(Enum):
@@ -17,10 +51,34 @@ class MainMenu(BaseGame):
         super().__init__()
         
         self._menu = Menu
-        self._active_menu_item = self._menu.NEW_GAME
+        self.cycle_iterator = CycleIterator([
+            Menu.NEW_GAME,
+            Menu.OPTIONS,
+            Menu.EXIT,
+        ])
     
-    def run(self):
-        super().run()
+    @property
+    def active_menu_item(self):
+        return self.cycle_iterator.current
+    
+    @property
+    def is_close(self):
+        return self._is_close
+
+    def check_events(self, event) -> None:
+        """ Check keycode events """
+        if event.key == K_UP:
+            print('up')
+            self.cycle_iterator.prev()
+        elif event.key == K_DOWN:
+            print('down')
+            self.cycle_iterator.next()
+        elif event.key == K_RETURN:
+            self.on_enter()
+    
+    def on_enter(self):
+        if self.active_menu_item == Menu.EXIT:
+            self.close()
 
     def draw(self, window: Surface):
         color = MyColor.BLACK
@@ -29,7 +87,8 @@ class MainMenu(BaseGame):
 
         font = pygame.font.Font(None, 36)
         for index, item in enumerate(Menu):
-            text = font.render(item.value, True, (255, 255, 255))
+            font_color = (255, 0, 0) if item == self.active_menu_item else (255, 255, 255)
+            text = font.render(item.value, True, font_color)
             
             window.blit(text, (100, 50 + (index + 1) * 36))
         
