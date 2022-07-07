@@ -1,13 +1,15 @@
 from pygame.sprite import Group
+from pygame.locals import K_ESCAPE
 
-from common.base_game import BaseGame
+from common.frame import Frame, Config
 from common.other import MyColor
+import pySnake
 
 from pySnake.eat import Eat
 from pySnake.snake import Snake
 
 
-class SnakeGame(BaseGame):
+class SnakeGame(Frame):
     def __init__(self):
         super().__init__()
         
@@ -18,7 +20,9 @@ class SnakeGame(BaseGame):
         self._all_groups = Group(*self.snake, self.eat)
 
     def check_events(self, event):
-        pass
+        if event.key == K_ESCAPE:
+            menu = pySnake.main_menu.MainMenu()
+            Config.set_frame(menu)
     
     def update(self):
         pass

@@ -14,6 +14,7 @@ from common.config import (
     FPS, TIMEOUT,
 )
 from common.base_game import BaseGame
+from common.frame import Config
 from pySnake.main_menu import MainMenu
 from pySnake.game import SnakeGame
 
@@ -27,18 +28,24 @@ from pySnake.game import SnakeGame
 
 class Game:
     """ Base class of game """
-    game: Union[BaseGame, None] = SnakeGame()
-    main_menu = MainMenu()
+    # game: Union[BaseGame, None] = SnakeGame()
+    # main_menu = MainMenu()
+    config = Config
+    frame = Config.frame
 
     def __init__(self, window_size: tuple = None) -> None:
         """ Initialize of 'GAME' object """
         pygame.init()
 
+        # window here and in frame is singleton
         self._window = display.set_mode(window_size or WINDOW_SIZE)
         self._width, self._height = self._window.get_size()
         self._is_play = True
         self._timer = time()
         self._time = Clock()
+        
+        menu = MainMenu()
+        self.config.set_frame(menu)
 
     def run(self) -> None:
         """ Run main loop of game """
@@ -47,8 +54,9 @@ class Game:
         while self._is_play:
             self._check_events()
             if self.is_time:
-                self.game.run()
+                # self.game.run()
                 # self.main_menu.run()
+                self.frame.draw()
                 # self.main_menu.draw(self._window)
             display.flip()
 
@@ -56,21 +64,21 @@ class Game:
     def is_time(self) -> bool:
         """ It's property return boolean if is timeout """
         if self._timer < time():
-            self._timer = time() + TIMEOUT
+            self._timer = time() + self.frame.timeout
             return True
         return False
 
     def _check_events(self) -> None:
         """ Check all events and set action """
-        if self.main_menu.is_close:
+        if self.frame.is_close:
             self.close()
         
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.close()
             elif event.type == KEYDOWN:
-                if self.main_menu.check_events:
-                    self.main_menu.check_events(event)
+                if self.frame.check_events:
+                    self.frame.check_events(event)
     
     def close(self) -> None:
         """ Close main loop of game """

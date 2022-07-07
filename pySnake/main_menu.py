@@ -1,10 +1,10 @@
 from enum import Enum
 
 import pygame
-from pygame.surface import Surface
-from common.base_game import BaseGame
-from common.other import MyColor
 from pygame.locals import K_UP, K_DOWN, K_RETURN
+from common.frame import Frame, Config
+from common.other import MyColor
+import pySnake
 
 
 class CycleIterator:
@@ -43,7 +43,7 @@ class Menu(Enum):
     EXIT = 'Exit'
 
 
-class MainMenu(BaseGame):
+class MainMenu(Frame):
     def __init__(self):
         super().__init__()
         
@@ -68,20 +68,27 @@ class MainMenu(BaseGame):
             self.on_enter()
     
     def on_enter(self):
-        if self.active_menu_item == Menu.EXIT:
+        if self.active_menu_item == Menu.NEW_GAME:
+            game = pySnake.game.SnakeGame()
+            Config.set_frame(game)
+        elif self.active_menu_item == Menu.EXIT:
             self.close()
 
-    def draw(self, window: Surface):
+    def draw(self):
         color = MyColor.BLACK
 
-        window.fill(color)
+        self._window.fill(color)
 
         font = pygame.font.Font(None, 36)
         for index, item in enumerate(Menu):
             font_color = (255, 0, 0) if item == self.active_menu_item else (255, 255, 255)
             text = font.render(item.value, True, font_color)
             
-            window.blit(text, (100, 50 + (index + 1) * 36))
+            self._window.blit(text, (100, 50 + (index + 1) * 36))
+    
+    @property
+    def timeout(self):
+        return 0.1
         
     def game_over(self):
         pass
