@@ -3,8 +3,8 @@ from enum import Enum
 import pygame
 from pygame.locals import K_UP, K_DOWN, K_RETURN
 from common.frame import Frame, Config
-from common.other import MyColor
-import pySnake
+from common.other import BaseColor
+from pySnake import game
 
 
 class CycleIterator:
@@ -53,7 +53,7 @@ class MainMenu(Frame):
             Menu.OPTIONS,
             Menu.EXIT,
         ])
-    
+
     @property
     def active_menu_item(self):
         return self.cycle_iterator.current
@@ -66,16 +66,16 @@ class MainMenu(Frame):
             self.cycle_iterator.next()
         elif event.key == K_RETURN:
             self.on_enter()
-    
+
     def on_enter(self):
         if self.active_menu_item == Menu.NEW_GAME:
-            game = pySnake.game.SnakeGame()
-            Config.set_frame(game)
+            snake_game = game.SnakeGame()
+            Config.set_frame(snake_game)
         elif self.active_menu_item == Menu.EXIT:
             self.close()
 
     def draw(self):
-        color = MyColor.BLACK
+        color = BaseColor.BLACK
 
         self._window.fill(color)
 
@@ -85,7 +85,7 @@ class MainMenu(Frame):
             text = font.render(item.value, True, font_color)
             
             self._window.blit(text, (100, 50 + (index + 1) * 36))
-    
+
     @property
     def timeout(self):
         return 0.1

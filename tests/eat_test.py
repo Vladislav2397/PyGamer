@@ -1,4 +1,4 @@
-from common.other import MyColor
+from common.other import BaseColor
 from pySnake.eat import Eat
 from unittest import TestCase, main
 
@@ -8,7 +8,7 @@ BASE_Y = 20
 class EatTest(TestCase):
 
 	def setUp(self) -> None:
-		self.eat = Eat([BASE_X, BASE_Y], MyColor.RED)
+		self.eat = Eat([BASE_X, BASE_Y], BaseColor.RED)
 		return super().setUp()
 	
 	def test_equal_list(self):

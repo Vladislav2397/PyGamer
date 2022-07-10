@@ -1,17 +1,22 @@
-from typing import Deque, NamedTuple
+from typing import NamedTuple
 
+from collections import deque
 from pygame.sprite import Group
 from pygame import Color
 
 from common.config import (
     BLOCK_SIZE,
-    LEFT, RIGHT, UP, DOWN, WINDOW_SIZE
+    LEFT, RIGHT, UP, DOWN,
+    MoveDirection
 )
 from common.position import Position
-from common.other import MyColor
+from common.other import BaseColor
 from common.block import Block
+from pySnake.helpers import colored_block_factory, next_block_position
 
 Window = NamedTuple('window', [('width', int), ('height', int)])
+
+green_block_factory = colored_block_factory()
 
 
 class Snake(Group):
@@ -20,35 +25,28 @@ class Snake(Group):
     def __init__(
         self,
         pos: list = None,
-        window_size: tuple = WINDOW_SIZE,
-        color: Color = MyColor.GREEN,
+        color: Color = BaseColor.GREEN,
         vector: str = RIGHT,
         *sprites
     ) -> None:
-        """ Initalize snake """
+        """ Initialize snake """
         
-        if pos:
-            self.pos = Position(pos, step=BLOCK_SIZE)
-        else:
-            self.pos = Position(
-                [BLOCK_SIZE * 5, BLOCK_SIZE * 4],
-                step=BLOCK_SIZE
-            )
-        if window_size:
-            self.window = Window(*window_size)
-        else:
-            self.window = Window(100, 100)
+        self._pos = Position(*pos or (BLOCK_SIZE * 5, BLOCK_SIZE * 4))
         self._color = color
         self.vector = vector
         self._step = BLOCK_SIZE
         self._is_changed = False
         self._is_upgrade = False
-        x, y = self.pos
-        self._body: Deque[Block] = Deque([
-            Block(pos=(x, y), color=self._color),
-            Block(pos=(x - self._step, y), color=self._color),
-            Block(pos=(x - self._step * 2, y), color=self._color)
+        x, y = self._pos
+
+        block_factory = colored_block_factory(self._color)
+
+        self._body = deque([
+            block_factory(x, y),
+            block_factory(x - self._step, y),
+            block_factory(x - self._step * 2, y),
         ])
+        
         super().__init__([*sprites, *self._body])
     
     def __len__(self) -> int:
@@ -57,11 +55,13 @@ class Snake(Group):
     @property
     def head(self) -> Block:
         """ Get head block """
+        
         return self._body[0]
     
     @property
     def length(self) -> int:
         """ Get length snake """
+        
         return len(self)
     
     @property
@@ -70,6 +70,22 @@ class Snake(Group):
         
         return set([(block.x, block.y) for block in self._body])
     
+    @property
+    def next_position(self) -> Position:
+        """ Return next position for snake """
+        direction = None
+        
+        if self.vector == UP:
+            direction = MoveDirection.UP
+        elif self.vector == LEFT:
+            direction = MoveDirection.LEFT
+        elif self.vector == DOWN:
+            direction = MoveDirection.DOWN
+        elif self.vector == RIGHT:
+            direction = MoveDirection.RIGHT
+
+        return next_block_position(self.head, direction)
+
     def _update_vector(self, vector: str) -> None:
         """ Change vector snake """
         
@@ -86,40 +102,40 @@ class Snake(Group):
         """ Update snake body """
         
         elem = self._body.pop()
-        elem.set_position(self.pos)
+        elem.set_position(self._pos)
         self._body.appendleft(elem)
     
     def _upgrade_snake_body(self):
         """ Upgrade snake body """
         
-        block = Block(pos=self.pos, color=self._color)
+        block = Block(pos=self._pos, color=self._color)
         self._body.appendleft(block)
         self.add(block)
     
     def _loop_in_frame(self):
         """ Check snake pos in frame and edit them """
         
-        if self.pos.x < 0:
-            self.pos.x = self.window.width - self._step
-        elif self.pos.x >= self.window.width:
-            self.pos.x = 0
+        # if self._pos.x < 0:
+        #     self._pos.x = self.window.width - self._step
+        # elif self._pos.x >= self.window.width:
+        #     self._pos.x = 0
         
-        if self.pos.y < 0:
-            self.pos.y = self.window.height - self._step
-        elif self.pos.y >= self.window.height:
-            self.pos.y = 0
+        # if self._pos.y < 0:
+        #     self._pos.y = self.window.height - self._step
+        # elif self._pos.y >= self.window.height:
+        #     self._pos.y = 0
     
     def move(self) -> None:
         """ Move snake by vector on one grid item """
         
         if self.vector == LEFT:
-            self.pos.move_left()
+            self._pos = next_block_position(self.head, MoveDirection.LEFT)
         elif self.vector == RIGHT:
-            self.pos.move_right()
+            self._pos = next_block_position(self.head, MoveDirection.RIGHT)
         elif self.vector == UP:
-            self.pos.move_top()
+            self._pos = next_block_position(self.head, MoveDirection.UP)
         elif self.vector == DOWN:
-            self.pos.move_bottom()
+            self._pos = next_block_position(self.head, MoveDirection.DOWN)
     
     def turn(self, vector: str) -> None:
         """ Check and update snake vector """

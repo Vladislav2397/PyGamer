@@ -8,7 +8,7 @@ WINDOW_SIZE = (
 )
 
 FPS = 30
-TIMEOUT = 0.2
+TIMEOUT = 1.2
 
 
 class MoveDirection(Enum):

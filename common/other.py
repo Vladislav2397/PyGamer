@@ -1,7 +1,7 @@
 from pygame import Color
 
 
-class MyColor:
+class BaseColor:
     """ Class for all my define colors """
 
     BLACK = Color(0, 0, 0)

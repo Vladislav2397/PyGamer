@@ -1,5 +1,3 @@
-from typing import Union
-
 import pygame
 from pygame.locals import (
     KEYDOWN, QUIT
@@ -10,13 +8,10 @@ from pygame.time import Clock
 from time import time
 
 from common.config import (
-    WINDOW_SIZE,
-    FPS, TIMEOUT,
+    WINDOW_SIZE, FPS
 )
-from common.base_game import BaseGame
 from common.frame import Config
 from pySnake.main_menu import MainMenu
-from pySnake.game import SnakeGame
 
 
 # TODO: Add debug mode (optional)
@@ -43,7 +38,7 @@ class Game:
         self._is_play = True
         self._timer = time()
         self._time = Clock()
-        
+
         menu = MainMenu()
         self.config.set_frame(menu)
 
@@ -72,14 +67,14 @@ class Game:
         """ Check all events and set action """
         if self.frame.is_close:
             self.close()
-        
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.close()
             elif event.type == KEYDOWN:
                 if self.frame.check_events:
                     self.frame.check_events(event)
-    
+
     def close(self) -> None:
         """ Close main loop of game """
         self._is_play = False
